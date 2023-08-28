@@ -27,44 +27,16 @@ VALIDATE(){
     fi
 }
 
-# Configure YUM Repos from the script provided by vendor
-
-
 curl -s https://packagecloud.io/install/repositories/rabbitmq/erlang/script.rpm.sh | bash &>>$LOGFILE
-
-VALIDATE $? "Configuring erlnag yum repos"
-
-# Configure YUM Repos for RabbitMQ.
-
 
 curl -s https://packagecloud.io/install/repositories/rabbitmq/rabbitmq-server/script.rpm.sh | bash &>>$LOGFILE
 
-VALIDATE $? "Configuring Rabbit MQ YUM Repos"
-
 yum install rabbitmq-server -y  &>>$LOGFILE
-
-VALIDATE $? "Starting RabbitMQ Service"
-
-
-# Enable and Start RabbitMQ Service
 
 systemctl enable rabbitmq-server  &>>$LOGFILE
 
-VALIDATE $? "Enabling RabbitMQ Service"
-
 systemctl start rabbitmq-server  &>>$LOGFILE
-
-VALIDATE $? "Starting RabbitMQ Service"
-
-
-#RabbitMQ comes with a default username / password as guest/guest. But this user cannot be used to connect. Hence, we need to create one user for the application
-
 
 rabbitmqctl add_user roboshop roboshop123 &>>$LOGFILE
 
-
-VALIDATE $? "Adding user roboshop"
-
 rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*" &>>$LOGFILE
-
-VALIDATE $? "Setting up permissions"
