@@ -105,6 +105,6 @@ VALIDATE "Installing mongodb-shell"
 
 # Load Schema
 
-mongo --host mongodb.robomart.cloud < /app/schema/user.js &>> $LOGFILE
+mongo --host mongodb.robomart.cloud </app/schema/user.js &>> $LOGFILE
 
 VALIDATE "Schema loading"
