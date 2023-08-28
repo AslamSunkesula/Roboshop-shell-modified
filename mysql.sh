@@ -38,7 +38,7 @@ yum module disable mysql -y &>> $LOGFILE
 
 VALIDATE $? "Disabling MySQL 8 Version"
 
-cp /home/centos/Roboshop-shell-modified/mysql.repo /etc/yum.repos.d/mysql.repo --archive &>> $LOGFILE
+cp /home/centos/Roboshop-shell-modified/mysql.repo /etc/yum.repos.d/mysql.repo  &>> $LOGFILE
 
 #Install MySQL Server
 
