@@ -25,7 +25,7 @@ VALIDATE()
         fi
 }
 
-# Setup NodeJS repos. Vendor is providing a script to setup the repos
+# Setup NodeJS repos
 
 curl -sL https://rpm.nodesource.com/setup_lts.x | bash &>> $LOGFILE
 
@@ -57,13 +57,13 @@ fi
 
 # Download the application code to created app directory
 
-curl -L -o /tmp/cart.zip https://roboshop-artifacts.s3.amazonaws.com/cart.zip &>> $LOGFILE
+curl -L -o /tmp/user.zip https://roboshop-artifacts.s3.amazonaws.com/user.zip &>> $LOGFILE
 
 VALIDATE "Code downloading"
 
 cd /app
 
-unzip /tmp/cart.zip &>> $LOGFILE
+unzip /tmp/user.zip &>> $LOGFILE
 
 VALIDATE "Unzipping code"
 
@@ -73,20 +73,38 @@ npm install &>> $LOGFILE
 
 VALIDATE "NPM dependencies installing"
 
-# Setup SystemD cart Service
+# Setup SystemD user Service
 
-cp -v /home/centos/roboshope-services-scripts/cart.service /etc/systemd/system/cart.service &>> $LOGFILE
+cp -v /home/centos/Roboshop-shell-modified/user.service /etc/systemd/system/user.service &>> $LOGFILE
 
-VALIDATE "Creating cart service"
+VALIDATE "Creating user service"
 
 # Load, Enable and Start service
 
 systemctl daemon-reload
 
-systemctl enable cart &>> $LOGFILE
+systemctl enable user &>> $LOGFILE
 
-VALIDATE "Enabling cart service"
+VALIDATE "Enabling user service"
 
-systemctl start cart &>> $LOGFILE
+systemctl start user &>> $LOGFILE
 
-VALIDATE "Starting cart service"
+VALIDATE "Starting user service"
+
+# Creating mongo repo for client installation
+
+cp -v /home/centos/Roboshop-shell-modified/mongo.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
+
+VALIDATE "Repo creation"
+
+# Installing mongodb-client
+
+yum install mongodb-org-shell -y &>> $LOGFILE
+
+VALIDATE "Installing mongodb-shell"
+
+# Load Schema
+
+mongo --host mongodb.robomart.cloud < /app/schema/user.js &>> $LOGFILE
+
+VALIDATE "Schema loading"
