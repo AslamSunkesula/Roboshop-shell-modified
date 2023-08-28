@@ -1,57 +1,66 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 DATE=$(date +%F)
-LOGSDIR=/tmp
-# /home/centos/shellscript-logs/script-name-date.log
-SCRIPT_NAME=$0
-LOGFILE=$LOGSDIR/$SCRIPT_NAME-$DATE.log
-USERID=$(id -u)
+SCRIPT_NAME="$0"
+LOG_FILE=/tmp/$SCRIPT_NAME-$DATE.log
+
 R="\e[31m"
 G="\e[32m"
-N="\e[0m"
-Y="\e[33m"
+W="\033[0m"
 
-if [ $USERID -ne 0 ];
+if [[ $(id -u) -ne 0 ]]
 then
-    echo -e "$R ERROR:: Please run this script with root access $N"
-    exit 1
+        echo -e "$R ERROR : Please run this sctipt with root user, swich to root and try $W"
+        exit 1
 fi
 
-VALIDATE(){
-    if [ $1 -ne 0 ];
-    then
-        echo -e "$2 ... $R FAILURE $N"
-        exit 1
-    else
-        echo -e "$2 ... $G SUCCESS $N"
-    fi
+VALIDATE()
+{
+    if [[ $? -ne 0 ]]
+        then
+                echo -e "$1 $R ..... Failure $W"
+                exit 2
+        else
+                echo -e "$1 $G ..... Success $W"
+        fi
 }
 
-#Developer has chosen the database MySQL. Hence, we are trying to install it up and configure it.
+# CentOS-8 Comes with MySQL 8 Version by default, However our application needs MySQL 5.7. So lets disable MySQL 8 version
 
-#CentOS-8 Comes with MySQL 8 Version by default, However our application needs MySQL 5.7. So lets disable MySQL 8 version.
+yum module disable mysql -y &>> "$LOG_FILE"
 
+VALIDATE "Disabling MySQL 8 Version"
 
-yum module disable mysql -y &>> $LOGFILE
+# Setup the MySQL5.7 repo file
 
-VALIDATE $? "Disabling the default version"
+cp -v /home/centos/Roboshop-shell-modified/mysql.repo /etc/yum.repos.d/mysql.repo &>> "$LOG_FILE"
 
-cp /home/centos/roboshop-shell-modified/mysql.repo /etc/yum.repos.d/mysql.repo &>> $LOGFILE
+VALIDATE "Creating mysql.repo"
 
-VALIDATE $? "Copying MySQL repo" 
+# Install MySQL Server
 
-yum install mysql-community-server -y &>> $LOGFILE
+yum install mysql-community-server -y &>> "$LOG_FILE"
 
-VALIDATE $? "Installing MySQL Server"
+VALIDATE "Installing mysql-community-server"
 
-systemctl enable mysqld &>> $LOGFILE
+# Start and Enable MySQL Service
 
-VALIDATE $? "Enabling MySQL"
+systemctl enable mysqld &>> "$LOG_FILE"
 
-systemctl start mysqld &>> $LOGFILE
+VALIDATE "Enabling mysql service"
 
-VALIDATE $? "Staring MySQL"
+systemctl start mysqld &>> "$LOG_FILE"
 
-mysql_secure_installation --set-root-pass RoboShop@1 &>> $LOGFILE
+VALIDATE "Starting mysql service"
 
-VALIDATE $? "setting up root password"
+# We need to change the default root password in order to start using the database service. Use password RoboShop@1 or any other as per your choice
+
+mysql_secure_installation --set-root-pass RoboShop@1
+
+VALIDATE "Password setup"
+
+# Validate MySQL is Up and Operational.
+
+netstat -tulpn | grep 3306 &>> "$LOG_FILE"
+
+VALIDATE "MySQL Status Validation"
