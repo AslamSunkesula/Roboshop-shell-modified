@@ -63,25 +63,25 @@ fi
 
 curl -L -o /tmp/cart.zip https://roboshop-artifacts.s3.amazonaws.com/cart.zip &>> $LOGFILE
 
-VALIDATE "Code downloading"
+VALIDATE $? "Code downloading"
 
 cd /app
 
 unzip /tmp/cart.zip &>> $LOGFILE
 
-VALIDATE "Unzipping code"
+VALIDATE $? "Unzipping code"
 
 # Install npm dependencies
 
 npm install &>> $LOGFILE
 
-VALIDATE "NPM dependencies installing"
+VALIDATE $? "NPM dependencies installing"
 
 # Setup SystemD cart Service
 
 cp -v /home/centos/Roboshop-shell-modified/cart.service /etc/systemd/system/cart.service &>> $LOGFILE
 
-VALIDATE "Creating cart service"
+VALIDATE $? "Creating cart service"
 
 # Load, Enable and Start service
 
@@ -89,8 +89,8 @@ systemctl daemon-reload
 
 systemctl enable cart &>> $LOGFILE
 
-VALIDATE "Enabling cart service"
+VALIDATE $? "Enabling cart service"
 
 systemctl start cart &>> $LOGFILE
 
-VALIDATE "Starting cart service"
+VALIDATE $? "Starting cart service"
