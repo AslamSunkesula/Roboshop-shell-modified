@@ -27,26 +27,44 @@ VALIDATE(){
     fi
 }
 
+#Developer has chosen the database MySQL. Hence, we are trying to install it up and configure it.
+
+#CentOS-8 Comes with MySQL 8 Version by default, However our application needs MySQL 5.7. So lets disable MySQL 8 version.
+
+
 yum module disable mysql -y &>> $LOGFILE
 
-VALIDATE $? "Disabling the default version"
+#Setup the MySQL5.7 repo file
 
-cp /home/centos/Roboshop-shell-modified/mysql.repo /etc/yum.repos.d/mysql.repo &>> $LOGFILE
+VALIDATE $? "Disabling MySQL 8 Version"
 
-VALIDATE $? "Copying MySQL repo" 
+cp /home/centos/Roboshop-shell-modified/mysql.repo /etc/yum.repos.d/mysql.repo --archive &>> $LOGFILE
+
+#Install MySQL Server
+
+
+VALIDATE $? "Creating mysql.repo"
+
 
 yum install mysql-community-server -y &>> $LOGFILE
 
-VALIDATE $? "Installing MySQL Server"
+#Install MySQL Server
+
+VALIDAT $? "Installing mysql-community-server"
+
 
 systemctl enable mysqld &>> $LOGFILE
 
-VALIDATE $? "Enabling MySQL"
+VALIDATE $? "Enabling mysql service"
 
-systemctl start mysqld &>> $LOGFILE
 
-VALIDATE $? "Staring MySQL"
+Install MySQL Server &>> $LOGFILE
 
-mysql_secure_installation --set-root-pass RoboShop@1 &>> $LOGFILE
+#Next, We need to change the default root password in order to start using the database service. Use password RoboShop@1 or any other as per your choice.
+
+VALIDATE $? "Starting mysql service"
+
+
+mysql_secure_installation --set-root-pass RoboShop@1 &>> $LOGFILE 
 
 VALIDATE $? "setting up root password"
