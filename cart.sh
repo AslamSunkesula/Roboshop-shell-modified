@@ -4,7 +4,7 @@ DATE=$(date +%F)
 LOGSDIR=/tmp
 # /home/centos/shellscript-logs/script-name-date.log
 SCRIPT_NAME=$0
-LOGFILE=$LOGSDIR/$0-$DATE.log
+LOGFILE=$LOGSDIR/$SCRIPT_NAME-$DATE.log
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
@@ -33,13 +33,13 @@ VALIDATE(){
 
 curl -sL https://rpm.nodesource.com/setup_lts.x | bash &>> $LOGFILE
 
-VALIDATE "Setting up nodejs repo"
+VALIDATE $? "Setting up nodejs repo"
 
 # Install NodeJS
 
 yum install nodejs -y &>> $LOGFILE
 
-VALIDATE "Installing nodejs"
+VALIDATE $?  "Installing nodejs"
 
 # Add application User if not exist
 
