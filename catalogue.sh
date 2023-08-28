@@ -79,7 +79,7 @@ VALIDATE $? "NPM dependencies installing"
 
 # Setup SystemD Catalogue Service
 
-cp -v /home/centos/roboshope-services-scripts/catalogue.service /etc/systemd/system/catalogue.service &>>$LOGFILE
+cp -v /home/centos/Roboshop-shell-modified/catalogue.service /etc/systemd/system/catalogue.service &>>$LOGFILE
 
 VALIDATE $? "Creating catalogue service"
 
