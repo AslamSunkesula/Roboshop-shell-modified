@@ -18,7 +18,8 @@ then
 fi
 
 VALIDATE(){
-    if [ $1 -ne 0 ];
+    if [ $1 -ne 0 ]
+
     then
         echo -e "$2 ... $R FAILURE $N"
         exit 1
@@ -38,7 +39,7 @@ VALIDATE $? "Setting up nodejs repo"
 
 yum install nodejs -y&>>$LOGFILE
 
-VALIDATE "Installing nodejs"
+VALIDATE $? "Installing nodejs"
 
 # Add application User if not exist
 
