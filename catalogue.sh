@@ -63,7 +63,7 @@ VALIDATE "Code downloading"
 
 cd /app
 
-unzip -o /tmp/catalogue.Zip &>> $LOGFILE
+unzip /tmp/catalogue.Zip &>> $LOGFILE
 
 VALIDATE "Unzipping code"
 
