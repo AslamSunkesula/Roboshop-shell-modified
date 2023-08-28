@@ -29,7 +29,7 @@ VALIDATE()
 
 yum module disable mysql -y &>> "$LOG_FILE"
 
-VALIDATE "Disabling MySQL 8 Version"
+VALIDATE $? "Disabling MySQL 8 Version"
 
 # Setup the MySQL5.7 repo file
 
