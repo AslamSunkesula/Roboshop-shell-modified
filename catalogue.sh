@@ -59,54 +59,45 @@ fi
 
 curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip &>>$LOGFILE
 
-VALIDATE "Code downloading"
+VALIDATE $? "downloading catalogue artifact"
 
-cd /app
+cd /app &>>$LOGFILE
 
-unzip /tmp/catalogue.Zip &>> $LOGFILE
+VALIDATE $? "Moving into app directory"
 
-VALIDATE "Unzipping code"
+unzip /tmp/catalogue.zip &>>$LOGFILE
 
-# Install npm dependencies
+VALIDATE $? "unzipping catalogue"
 
-npm install &>> $LOGFILE
+npm install &>>$LOGFILE
 
-VALIDATE "NPM dependencies installing"
+VALIDATE $? "Installing dependencies"
 
-# Setup SystemD Catalogue Service
+# give full path of catalogue.service because we are inside /app
+cp /home/centos/roboshop-shell/catalogue.service /etc/systemd/system/catalogue.service &>>$LOGFILE
 
-cp -v /home/centos/Roboshop-shell-modified/catalogue.service /etc/systemd/system/catalogue.service &>> $LOGFILE
+VALIDATE $? "copying catalogue.service"
 
-VALIDATE "Creating catalogue service"
+systemctl daemon-reload &>>$LOGFILE
 
-# Load the service
+VALIDATE $? "daemon reload"
 
-systemctl daemon-reload
+systemctl enable catalogue &>>$LOGFILE
 
-# Start and Enable the service
+VALIDATE $? "Enabling Catalogue"
 
-systemctl enable catalogue &>> $LOGFILE
+systemctl start catalogue &>>$LOGFILE
 
-VALIDATE "Enabling catalogue service"
+VALIDATE $? "Starting Catalogue"
 
-systemctl start catalogue &>> $LOGFILE
+cp /home/centos/Roboshop-shell-modified/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOGFILE
 
-VALIDATE "Starting catalogue service"
+VALIDATE $? "Copying mongo repo"
 
-# Creating mongo repo for client installation
+yum install mongodb-org-shell -y &>>$LOGFILE
 
-cp -v /home/centos/Roboshop-shell-modified/mongo.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
+VALIDATE $? "Installing mongo client"
 
-VALIDATE "Repo creation"
+mongo --host mongodb.aslamroboshop.online </app/schema/catalogue.js &>>$LOGFILE
 
-# Installing mongodb-client
-
-yum install mongodb-org-shell -y &>> $LOGFILE
-
-VALIDATE "Installing mongodb-shell"
-
-# Load Schema
-
-mongo --host mongodb.robomart.cloud < /app/schema/catalogue.js &>> $LOGFILE
-
-VALIDATE "Schema loading"
+VALIDATE $? "loading catalogue data into mongodb"
