@@ -32,7 +32,7 @@ VALIDATE(){
 
 curl -sL https://rpm.nodesource.com/setup_lts.x | bash &>>$LOGFILE
 
-VALIDATE "Setting up nodejs repo"
+VALIDATE $? "Setting up nodejs repo"
 
 # Install NodeJS
 
@@ -62,25 +62,25 @@ fi
 
 curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue.zip &>>$LOGFILE
 
-VALIDATE "Code downloading"
+VALIDATE $? "Code downloading"
 
 cd /app
 
 unzip /tmp/catalogue.zip &>>$LOGFILE
 
-VALIDATE "Unzipping code"
+VALIDATE $? "Unzipping code"
 
 # Install npm dependencies
 
 npm install &>>$LOGFILE
 
-VALIDATE "NPM dependencies installing"
+VALIDATE $? "NPM dependencies installing"
 
 # Setup SystemD Catalogue Service
 
 cp -v /home/centos/roboshope-services-scripts/catalogue.service /etc/systemd/system/catalogue.service &>>$LOGFILE
 
-VALIDATE "Creating catalogue service"
+VALIDATE $? "Creating catalogue service"
 
 # Load the service
 
@@ -90,26 +90,26 @@ systemctl daemon-reload
 
 systemctl enable catalogue &>>$LOGFILE
 
-VALIDATE "Enabling catalogue service"
+VALIDATE $? "Enabling catalogue service"
 
 systemctl start catalogue &>>$LOGFILE
 
-VALIDATE "Starting catalogue service"
+VALIDATE $? "Starting catalogue service"
 
 # Creating mongo repo for client installation
 
 cp -v /home/centos/Roboshop-shell-modified/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOGFILE
 
-VALIDATE "Repo creation"
+VALIDATE $? "Repo creation"
 
 # Installing mongodb-client
 
 yum install mongodb-org-shell -y &>>$LOGFILE
 
-VALIDATE "Installing mongodb-shell"
+VALIDATE $? "Installing mongodb-shell"
 
 # Load Schema
 
 mongo --host mongodb.robomart.cloud < /app/schema/catalogue.js &>>$LOGFILE
 
-VALIDATE "Schema loading"
+VALIDATE $? "Schema loading"
